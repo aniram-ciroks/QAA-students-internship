@@ -10,21 +10,25 @@ import { expect, test } from '@playwright/test'
 
 test('Navigate to valamar.com & validate page title', async ({ page }) => {
 
-  const valamarURL = 'https//valamar.com'
+  const valamarURL = 'https://valamar.com' //ERROR_DISCOVERED_#2: invalid page URL, ERROR_FIX: added ":" after https
   await page.goto(valamarURL)
 
   await expect(
     page,
     'Page does NOT have expected page title.'
-  ).toHaveTitle('Valamar Holiday Hotels & Resorts', { timeout: 60000 })
+  ).toHaveTitle('Valamar Holiday Hotels & Resorts in Croatia and Austria', { timeout: 60000 }) 
 })
+/*ERROR_DISCOVERED_#3: expecting string "Valamar Holiday Hotels & Resorts", received string 
+"Valamar Holiday Hotels & Resorts in Croatia and Austria" ERROR_FIX: append .toHaveTitle to include "in Croatia and Austria"*/
 
 test('Navigate to valamar.com & click on Log in button', async ({ page }) => {
 
   const valamarURL = 'https://valamar.com'
   await page.goto(valamarURL)
 
-  await page.locator('div[id="azureb2c-login"]').click({ timeout: 30000 })
+  await page.locator('button[id="azureb2c-login"]').click({ timeout: 60000 })
+  /*ERROR_DISCOVERED_#4: improper tag "div" used ERROR_FIX: tag element changed to "button"*/
+  /*ERROR_DISCOVERED_#5: Test timeout of 30000ms exceeded ERROR_FIX: test timeout increased to 60000*/
 
   await page
     .locator('button[class="btn-vlm-primary w-full mt-6 app-button"]')
@@ -54,7 +58,7 @@ test('Validate ALL page urls & Network response', async ({ }) => {
 
   //NOTE: Make sure you're validating that ALL of urls have the appropriate structure
   for (let i = 1; i < urls.length; i++) {
-    const url = urls[j]
+    const url = urls[i] //ERROR_DISCOVERED_#1: non-decleared variable "j" used in for loop, ERROR_FIX: exchanged variable j to variable i
     console.log("Getting data for ", url)
     expect(url, 'URL does NOT have the proper structure!').toContain('https://')
   }
@@ -63,7 +67,7 @@ test('Validate ALL page urls & Network response', async ({ }) => {
   const response = await fetchData(urls[0])
   console.log("response\n", response)
 
-  const statusCode = '' //TODO: Replace this declaration with the actual status code from the response
+  const statusCode = response.status //TODO: Replace this declaration with the actual status code from the response
   expect(statusCode, 'Unexpected status code!').toEqual(200)
 
 })
